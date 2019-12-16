@@ -1,9 +1,45 @@
 #!/usr/bin/python3
 import json
+import time
+import datetime
+import logging
+import logging.config
+
 BOARD_EMULATOR = True
 
 if BOARD_EMULATOR == False:
     import smbus
+
+def percent(a, b):
+    if (a==0):
+        return b
+    if (b==0):
+        return a
+    result = int((abs(b - a) * 100) / a)   
+    return result 
+    
+def checkImportantChange(currentDetection, lastDetection):
+    if (percent(currentDetection.get('offChipTempValue'),lastDetection.get('offChipTempValue')))>2:
+        return True
+    if (percent(currentDetection.get('onboardBrightnessValue'),lastDetection.get('onboardBrightnessValue')))>2:
+        return True
+    if (percent(currentDetection.get('onboardTemperatureValue'),lastDetection.get('onboardTemperatureValue')))>2:
+        return True
+    if (percent(currentDetection.get('onboardHumidityValue'),lastDetection.get('onboardTemperatureValue')))>2:
+        return True
+    if (percent(currentDetection.get('barometerTemperaturValue'),lastDetection.get('barometerTemperaturValue')))>2:
+        return True
+    if (percent(currentDetection.get('barometerPressureValue'),lastDetection.get('barometerPressureValue')))>2:
+        return True
+    if (percent(currentDetection.get('presenceValue'),lastDetection.get('presenceValue')))>0:
+        return True
+
+def notifyStatus(jsonStatus):
+    logger.info('notifying...')
+    jsonStatus = json.dumps(jsonStatus)
+    logger.info(jsonStatus)
+    
+
 
 DEVICE_BUS = 1
 DEVICE_ADDR = 0x17
@@ -25,93 +61,119 @@ HUMAN_DETECT = 0x0D
 if BOARD_EMULATOR == False:
     bus = smbus.SMBus(DEVICE_BUS)
 
-aReceiveBuf = []
 
-aReceiveBuf.append(0x00) # 占位符
 
-if BOARD_EMULATOR == False:
-    for i in range(TEMP_REG,HUMAN_DETECT + 1):
-        aReceiveBuf.append(bus.read_byte_data(DEVICE_ADDR, i))
-else :
-    aReceiveBuf.append(22)
-    aReceiveBuf.append(0)
-    aReceiveBuf.append(255)
-    aReceiveBuf.append(8)
-    aReceiveBuf.append(24)
-    aReceiveBuf.append(49)
-    aReceiveBuf.append(0)
-    aReceiveBuf.append(25)
-    aReceiveBuf.append(148)
-    aReceiveBuf.append(138)
-    aReceiveBuf.append(1)
-    aReceiveBuf.append(0)
-    aReceiveBuf.append(0)
+logging.config.fileConfig("logging.conf")
+# create logger
+logger = logging.getLogger("mylogger")
+logger.info("Start sensing...")
 
-if aReceiveBuf[STATUS_REG] & 0x01 :
-    print("Off-chip temperature sensor overrange!")
-    sensorStatus = {'offChipTempValue':0, 'offChipTempStatus': 'KO', 'offChipTempMessage': 'Off-chip temperature sensor overrange!'}
-elif aReceiveBuf[STATUS_REG] & 0x02 :
-    print("No external temperature sensor!")
-    sensorStatus = {'offChipTempValue':0, 'offChipTempStatus':'KO', 'offChipTempMessage': 'No external temperature sensor!'}
-else :
-    print("Current off-chip sensor temperature = %d Celsius" % aReceiveBuf[TEMP_REG])
-    sensorStatus = {'offChipTempValue':aReceiveBuf[TEMP_REG], 'offChipTempStatus':'OK'}
-
-if aReceiveBuf[STATUS_REG] & 0x04 :
-    print("Onboard brightness sensor overrange!")
-    sensorStatus['onboardBrightnessValue'] = 0
-    sensorStatus['onboardBrightnessStatus'] = 'KO'
-    sensorStatus['onboardBrightnessMessage'] = 'Onboard brightness sensor overrange!'
-elif aReceiveBuf[STATUS_REG] & 0x08 :
-    print("Onboard brightness sensor failure!")
-    sensorStatus['onboardBrightnessValue'] = 0
-    sensorStatus['onboardBrightnessStatus'] = 'KO'
-    sensorStatus['onboardBrightnessMessage'] = 'Onboard brightness sensor failure!'
-else :
-    print("Current onboard sensor brightness = %d Lux" % (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L]))
-    sensorStatus['onboardBrightnessValue'] = (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L])
-    sensorStatus['onboardBrightnessStatus'] = 'OK'
-
-print("Current onboard sensor temperature = %d Celsius" % aReceiveBuf[ON_BOARD_TEMP_REG])
-sensorStatus['onboardTemperatureValue'] = aReceiveBuf[ON_BOARD_HUMIDITY_REG]
-sensorStatus['onboardTemperatureStatus'] = 'OK'
-print("Current onboard sensor humidity = %d %%" % aReceiveBuf[ON_BOARD_HUMIDITY_REG])
-sensorStatus['onboardHumidityValue'] = aReceiveBuf[ON_BOARD_HUMIDITY_REG]
-sensorStatus['onboardHumidityStatus'] = 'OK'
-
-if aReceiveBuf[ON_BOARD_SENSOR_ERROR] != 0 :
-    print("Onboard temperature and humidity sensor data may not be up to date!")
-    sensorStatus['onboardBrightnessMessage'] = 'Onboard temperature and humidity sensor data may not be up to date!'
-    sensorStatus['onboardHumidityMessage'] = 'Onboard temperature and humidity sensor data may not be up to date!'
+lastSensorStatus = {}
+lastNotificationTime = None
+while True:
+    aReceiveBuf = []
     
-
-if aReceiveBuf[BMP280_STATUS] == 0 :
-    print("Current barometer temperature = %d Celsius" % aReceiveBuf[BMP280_TEMP_REG])
-    sensorStatus['barometerTemperaturValue'] = aReceiveBuf[BMP280_TEMP_REG]
-    sensorStatus['barometerTemperaturStatus'] = 'OK'
-    print("Current barometer pressure = %d pascal" % (aReceiveBuf[BMP280_PRESSURE_REG_L] | aReceiveBuf[BMP280_PRESSURE_REG_M] << 8 | aReceiveBuf[BMP280_PRESSURE_REG_H] << 16))
-    sensorStatus['barometerPressureValue'] = aReceiveBuf[BMP280_PRESSURE_REG_L] | aReceiveBuf[BMP280_PRESSURE_REG_M] << 8 | aReceiveBuf[BMP280_PRESSURE_REG_H] << 16
-    sensorStatus['barometerPressureStatus'] = 'OK'
-else :
-    print("Onboard barometer works abnormally!")
-    sensorStatus['barometerTemperaturValue'] = 0
-    sensorStatus['barometerTemperaturStatus'] = 'KO'
-    sensorStatus['barometerTemperatureMessage'] = 'Onboard barometer works abnormally!'
-    sensorStatus['barometerPressureValue'] = 0
-    sensorStatus['barometerPressureStatus'] = 'KO'
-    sensorStatus['barometerPressureMessage'] = 'Onboard barometer works abnormally!'
-
-if aReceiveBuf[HUMAN_DETECT] == 1 :
-    print("Live body detected within 5 seconds!")
-    sensorStatus['presenceValue'] = 1
-    sensorStatus['presenceStatus'] = 'OK'
-    sensorStatus['presenceMessage'] = 'Live body detected within 5 seconds!'
-else:
-    print("No humans detected!")
-    sensorStatus['presenceValue'] = 0
-    sensorStatus['presenceStatus'] = 'OK'
-    sensorStatus['presenceMessage'] = 'No humans detected!'
+    aReceiveBuf.append(0x00) # 占位符
     
-sensorStatus = json.dumps(sensorStatus)
-print(sensorStatus)
+    if BOARD_EMULATOR == False:
+        for i in range(TEMP_REG,HUMAN_DETECT + 1):
+            aReceiveBuf.append(bus.read_byte_data(DEVICE_ADDR, i))
+    else :
+        aReceiveBuf.append(22)
+        aReceiveBuf.append(0)
+        aReceiveBuf.append(255)
+        aReceiveBuf.append(8)
+        aReceiveBuf.append(24)
+        aReceiveBuf.append(49)
+        aReceiveBuf.append(0)
+        aReceiveBuf.append(25)
+        aReceiveBuf.append(148)
+        aReceiveBuf.append(138)
+        aReceiveBuf.append(1)
+        aReceiveBuf.append(0)
+        aReceiveBuf.append(0)
+    
+    sensorStatus = {}
+    
+    if aReceiveBuf[STATUS_REG] & 0x01 :
+        logger.debug("Off-chip temperature sensor overrange!")
+        sensorStatus = {'offChipTempValue':0, 'offChipTempStatus': 'KO', 'offChipTempMessage': 'Off-chip temperature sensor overrange!'}
+    elif aReceiveBuf[STATUS_REG] & 0x02 :
+        logger.debug("No external temperature sensor!")
+        sensorStatus = {'offChipTempValue':0, 'offChipTempStatus':'KO', 'offChipTempMessage': 'No external temperature sensor!'}
+    else :
+        logger.debug("Current off-chip sensor temperature = %d Celsius" % aReceiveBuf[TEMP_REG])
+        sensorStatus = {'offChipTempValue':aReceiveBuf[TEMP_REG], 'offChipTempStatus':'OK'}
+    
+    if aReceiveBuf[STATUS_REG] & 0x04 :
+        logger.debug("Onboard brightness sensor overrange!")
+        sensorStatus['onboardBrightnessValue'] = 0
+        sensorStatus['onboardBrightnessStatus'] = 'KO'
+        sensorStatus['onboardBrightnessMessage'] = 'Onboard brightness sensor overrange!'
+    elif aReceiveBuf[STATUS_REG] & 0x08 :
+        logger.debug("Onboard brightness sensor failure!")
+        sensorStatus['onboardBrightnessValue'] = 0
+        sensorStatus['onboardBrightnessStatus'] = 'KO'
+        sensorStatus['onboardBrightnessMessage'] = 'Onboard brightness sensor failure!'
+    else :
+        logger.debug("Current onboard sensor brightness = %d Lux" % (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L]))
+        sensorStatus['onboardBrightnessValue'] = (aReceiveBuf[LIGHT_REG_H] << 8 | aReceiveBuf[LIGHT_REG_L])
+        sensorStatus['onboardBrightnessStatus'] = 'OK'
+    
+    logger.debug("Current onboard sensor temperature = %d Celsius" % aReceiveBuf[ON_BOARD_TEMP_REG])
+    sensorStatus['onboardTemperatureValue'] = aReceiveBuf[ON_BOARD_HUMIDITY_REG]
+    sensorStatus['onboardTemperatureStatus'] = 'OK'
+    logger.debug("Current onboard sensor humidity = %d %%" % aReceiveBuf[ON_BOARD_HUMIDITY_REG])
+    sensorStatus['onboardHumidityValue'] = aReceiveBuf[ON_BOARD_HUMIDITY_REG]
+    sensorStatus['onboardHumidityStatus'] = 'OK'
+    
+    if aReceiveBuf[ON_BOARD_SENSOR_ERROR] != 0 :
+        logger.debug("Onboard temperature and humidity sensor data may not be up to date!")
+        sensorStatus['onboardBrightnessMessage'] = 'Onboard temperature and humidity sensor data may not be up to date!'
+        sensorStatus['onboardHumidityMessage'] = 'Onboard temperature and humidity sensor data may not be up to date!'
+        
+    
+    if aReceiveBuf[BMP280_STATUS] == 0 :
+        logger.debug("Current barometer temperature = %d Celsius" % aReceiveBuf[BMP280_TEMP_REG])
+        sensorStatus['barometerTemperaturValue'] = aReceiveBuf[BMP280_TEMP_REG]
+        sensorStatus['barometerTemperaturStatus'] = 'OK'
+        logger.debug("Current barometer pressure = %d pascal" % (aReceiveBuf[BMP280_PRESSURE_REG_L] | aReceiveBuf[BMP280_PRESSURE_REG_M] << 8 | aReceiveBuf[BMP280_PRESSURE_REG_H] << 16))
+        sensorStatus['barometerPressureValue'] = aReceiveBuf[BMP280_PRESSURE_REG_L] | aReceiveBuf[BMP280_PRESSURE_REG_M] << 8 | aReceiveBuf[BMP280_PRESSURE_REG_H] << 16
+        sensorStatus['barometerPressureStatus'] = 'OK'
+    else :
+        logger.debug("Onboard barometer works abnormally!")
+        sensorStatus['barometerTemperaturValue'] = 0
+        sensorStatus['barometerTemperaturStatus'] = 'KO'
+        sensorStatus['barometerTemperatureMessage'] = 'Onboard barometer works abnormally!'
+        sensorStatus['barometerPressureValue'] = 0
+        sensorStatus['barometerPressureStatus'] = 'KO'
+        sensorStatus['barometerPressureMessage'] = 'Onboard barometer works abnormally!'
+    
+    if aReceiveBuf[HUMAN_DETECT] == 1 :
+        logger.debug("Live body detected within 5 seconds!")
+        sensorStatus['presenceValue'] = 1
+        sensorStatus['presenceStatus'] = 'OK'
+        sensorStatus['presenceMessage'] = 'Live body detected within 5 seconds!'
+    else:
+        logger.debug("No humans detected!")
+        sensorStatus['presenceValue'] = 0
+        sensorStatus['presenceStatus'] = 'OK'
+        sensorStatus['presenceMessage'] = 'No humans detected!'
+    
+    x = datetime.datetime.now()
+    sensorStatus['rilevationTime'] = x.strftime("%d-%m-%Y %H:%M:%S.%f")
+    
+    if len(lastSensorStatus) == 0:  #first run --> NOTIFY!
+        lastSensorStatus = sensorStatus
+        notifyStatus(sensorStatus)
+        lastNotificationTime = datetime.datetime.now()
+    else:
+        if (((datetime.datetime.now() - lastNotificationTime).seconds / 60) > 2 or checkImportantChange(sensorStatus, lastSensorStatus) == True):
+            notifyStatus(sensorStatus)
+            lastSensorStatus = sensorStatus
+            lastNotificationTime = datetime.datetime.now()
+        
+    sensorStatus = json.dumps(sensorStatus)            
+    logger.debug(sensorStatus)
+    time.sleep(1)
 
