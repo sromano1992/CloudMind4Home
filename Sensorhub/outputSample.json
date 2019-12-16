@@ -1,0 +1,17 @@
+{
+	"offChipTempValue": 22,
+	"offChipTempStatus": "OK",
+	"onboardBrightnessValue": 0,
+	"onboardBrightnessStatus": "OK",
+	"onboardBrightnessMessage": "Onboard brightness sensor failure!",
+	"onboardTemperatureValue": 49,
+	"onboardHumidityValue": 49,
+	"onboardHumidityStatus": "OK",
+	"barometerTemperaturValue": 25,
+	"barometerTemperaturStatus": "OK",
+	"barometerPressureValue": 101012,
+	"barometerPressureStatus": "OK",
+	"presenceValue": 0,
+	"presenceStatus": "OK",
+	"presenceMessage": "No humans detected!"
+}
