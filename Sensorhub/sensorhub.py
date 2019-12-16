@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import json
-BOARD_EMULATOR = True
+BOARD_EMULATOR = False
 
 if BOARD_EMULATOR == False:
     import smbus
