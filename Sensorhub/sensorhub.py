@@ -30,7 +30,7 @@ def checkImportantChange(currentDetection, lastDetection):
         return True
     if (percent(currentDetection.get('barometerTemperaturValue'),lastDetection.get('barometerTemperaturValue')))>2:
         return True
-    if (percent(currentDetection.get('barometerPressureValue'),lastDetection.get('barometerPressureValue')))>2:
+    if (percent(currentDetection.get('barometerPressureValue'),lastDetection.get('barometerPressureValue')))>10:
         return True
     if (percent(currentDetection.get('presenceValue'),lastDetection.get('presenceValue')))>0:
         return True
