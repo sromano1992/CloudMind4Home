@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 import json
+
+BOARD_EMULATOR = False
+
 import time
 import datetime
 import logging
 import logging.config
-
-BOARD_EMULATOR = True
 
 if BOARD_EMULATOR == False:
     import smbus
