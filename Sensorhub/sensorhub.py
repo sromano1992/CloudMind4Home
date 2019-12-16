@@ -74,7 +74,7 @@ else :
 
 print("Current onboard sensor temperature = %d Celsius" % aReceiveBuf[ON_BOARD_TEMP_REG])
 sensorStatus['onboardTemperatureValue'] = aReceiveBuf[ON_BOARD_HUMIDITY_REG]
-sensorStatus['onboardBrightnessStatus'] = 'OK'
+sensorStatus['onboardTemperatureStatus'] = 'OK'
 print("Current onboard sensor humidity = %d %%" % aReceiveBuf[ON_BOARD_HUMIDITY_REG])
 sensorStatus['onboardHumidityValue'] = aReceiveBuf[ON_BOARD_HUMIDITY_REG]
 sensorStatus['onboardHumidityStatus'] = 'OK'
