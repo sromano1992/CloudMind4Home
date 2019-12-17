@@ -1,4 +1,4 @@
-ano#!/usr/bin/python3
+#!/usr/bin/python3
 import json
 
 BOARD_EMULATOR = False
