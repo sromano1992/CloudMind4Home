@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import json
 
-BOARD_EMULATOR = False
+BOARD_EMULATOR = True
 
 import sys
 import time
