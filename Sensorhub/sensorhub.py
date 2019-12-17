@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+ano#!/usr/bin/python3
 import json
 
 BOARD_EMULATOR = False
@@ -21,18 +21,25 @@ def percent(a, b):
     
 def checkImportantChange(currentDetection, lastDetection):
     if (percent(currentDetection.get('offChipTempValue'),lastDetection.get('offChipTempValue')))>2:
+        logger.info("offChipTempValue important change...")
         return True
     if (percent(currentDetection.get('onboardBrightnessValue'),lastDetection.get('onboardBrightnessValue')))>2:
+        logger.info("onboardBrightnessValue important change...")
         return True
     if (percent(currentDetection.get('onboardTemperatureValue'),lastDetection.get('onboardTemperatureValue')))>2:
+        logger.info("onboardTemperatureValue important change...")
         return True
-    if (percent(currentDetection.get('onboardHumidityValue'),lastDetection.get('onboardTemperatureValue')))>2:
+    if (percent(currentDetection.get('onboardHumidityValue'),lastDetection.get('onboardHumidityValue')))>2:
+        logger.info("onboardHumidityValue important change...")
         return True
     if (percent(currentDetection.get('barometerTemperaturValue'),lastDetection.get('barometerTemperaturValue')))>2:
+        logger.info("barometerTemperaturValue important change...")
         return True
     if (percent(currentDetection.get('barometerPressureValue'),lastDetection.get('barometerPressureValue')))>10:
+        logger.info("barometerPressureValue important change...")
         return True
     if (percent(currentDetection.get('presenceValue'),lastDetection.get('presenceValue')))>0:
+        logger.info("presenceValue important change...")
         return True
 
 def notifyStatus(jsonStatus):
