@@ -62,4 +62,4 @@ plugins/com.python.pydev.runalltests/fake_homedir*
 .classpath
 .project
 
-*log.txt
+log.txt
