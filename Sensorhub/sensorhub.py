@@ -1,4 +1,4 @@
-ano#!/usr/bin/python3
+#!/usr/bin/python3
 import json
 
 BOARD_EMULATOR = False
@@ -20,7 +20,7 @@ def percent(a, b):
     return result 
     
 def checkImportantChange(currentDetection, lastDetection):
-    if (percent(currentDetection.get('offChipTempValue'),lastDetection.get('offChipTempValue')))>2:
+    if (percent(currentDetection.get('offChipTempValue'),lastDetection.get('offChipTempValue')))>4:
         logger.info("offChipTempValue important change...")
         return True
     if (percent(currentDetection.get('onboardBrightnessValue'),lastDetection.get('onboardBrightnessValue')))>2:
@@ -35,7 +35,7 @@ def checkImportantChange(currentDetection, lastDetection):
     if (percent(currentDetection.get('barometerTemperaturValue'),lastDetection.get('barometerTemperaturValue')))>2:
         logger.info("barometerTemperaturValue important change...")
         return True
-    if (percent(currentDetection.get('barometerPressureValue'),lastDetection.get('barometerPressureValue')))>10:
+    if (percent(currentDetection.get('barometerPressureValue'),lastDetection.get('barometerPressureValue')))>2:
         logger.info("barometerPressureValue important change...")
         return True
     if (percent(currentDetection.get('presenceValue'),lastDetection.get('presenceValue')))>0:
