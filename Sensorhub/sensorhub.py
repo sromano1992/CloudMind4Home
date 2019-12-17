@@ -3,6 +3,7 @@ import json
 
 BOARD_EMULATOR = False
 
+import sys
 import time
 import datetime
 import logging
@@ -10,6 +11,20 @@ import logging.config
 
 if BOARD_EMULATOR == False:
     import smbus
+
+def getserial():
+  # Extract serial from cpuinfo file
+  cpuserial = "0000000000000000"
+  try:
+    f = open('/proc/cpuinfo','r')
+    for line in f:
+      if line[0:6]=='Serial':
+        cpuserial = line[10:26]
+    f.close()
+  except:
+    cpuserial = "ERROR000000000"
+ 
+  return cpuserial
 
 def percent(a, b):
     if (a==0):
@@ -78,6 +93,13 @@ logger.info("Start sensing...")
 
 lastSensorStatus = {}
 lastNotificationTime = None
+#getting pi imei
+imei = getserial()
+if ("ERROR" in imei):
+    logger.error("Cannot read imei...exiting...")
+    sys.exit()
+    
+#start sensing
 while True:
     try:
         aReceiveBuf = []
@@ -171,6 +193,8 @@ while True:
         
         x = datetime.datetime.now()
         sensorStatus['rilevationTime'] = x.strftime("%d-%m-%Y %H:%M:%S.%f")
+        
+        sensorStatus['imei'] = imei
         
         if len(lastSensorStatus) == 0:  #first run --> NOTIFY!
             lastSensorStatus = sensorStatus
