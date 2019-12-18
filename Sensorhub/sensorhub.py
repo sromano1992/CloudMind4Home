@@ -1,13 +1,14 @@
 #!/usr/bin/python3
 import json
 
-BOARD_EMULATOR = True
+BOARD_EMULATOR = False
 
 import sys
 import time
 import datetime
 import logging
 import logging.config
+import gcloudiotMqtt
 
 if BOARD_EMULATOR == False:
     import smbus
@@ -57,10 +58,19 @@ def checkImportantChange(currentDetection, lastDetection):
         logger.info("presenceValue important change...")
         return True
 
+#Sample commandline:
+#python3 gcloudiotMqtt.py --algorithm RS256 --device_id RASP_000000001b982f0d --private_key_file ../../security/rsa_private.pem --registry_id cloudmind4home --ca_certs ../../security/roots.pem --project_id cloudmind4home --cloud_region europe-west1 gateway_send
 def notifyStatus(jsonStatus):
     logger.info('notifying...')
     jsonStatus = json.dumps(jsonStatus)
     logger.info(jsonStatus)
+    
+    logger.info("Google IoT Core notification...")
+    gcloudiotMqtt.send_data_from_bound_device(
+                "cloudmind4home",
+                "europe-west1", "cloudmind4home", "RASP_000000001b982f0d",
+                "../../security/rsa_private.pem",
+                "RS256", "../../security/roots.pem", jsonStatus)
     
 
 
@@ -94,7 +104,10 @@ logger.info("Start sensing...")
 lastSensorStatus = {}
 lastNotificationTime = None
 #getting pi imei
-imei = getserial()
+if BOARD_EMULATOR == False:
+    imei = getserial()
+else:
+    imei = "EMULATOR"
 if ("ERROR" in imei):
     logger.error("Cannot read imei...exiting...")
     sys.exit()
