@@ -8,7 +8,8 @@ import time
 import datetime
 import logging
 import logging.config
-import gcloudiotMqtt
+import gcloudmqtt
+import os
 
 if BOARD_EMULATOR == False:
     import smbus
@@ -66,13 +67,12 @@ def notifyStatus(jsonStatus):
     logger.info(jsonStatus)
     
     logger.info("Google IoT Core notification...")
-    gcloudiotMqtt.send_data_from_bound_device(
-                "cloudmind4home",
-                "europe-west1", "cloudmind4home", "RASP_000000001b982f0d",
-                "../../security/rsa_private.pem",
-                "RS256", "../../security/roots.pem", jsonStatus)
-    
-
+    gcloudmqtt.send_data_from_bound_device(
+            os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"), "cloudmind4home",
+            "europe-west1", "cloudmind4home", "RASP_000000001b982f0d",
+            "", 100, "../../security/rsa_private.pem",
+            "RS256", "../../security/roots.pem", "mqtt.googleapis.com",
+            8883, 20, jsonStatus)
 
 DEVICE_BUS = 1
 DEVICE_ADDR = 0x17
