@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import json
 
-BOARD_EMULATOR = False
+BOARD_EMULATOR = False   
 
 import sys
 import time
@@ -37,19 +37,19 @@ def percent(a, b):
     return result 
     
 def checkImportantChange(currentDetection, lastDetection):
-    if (percent(currentDetection.get('offChipTempValue'),lastDetection.get('offChipTempValue')))>2:
+    if (percent(currentDetection.get('offChipTempValue'),lastDetection.get('offChipTempValue')))>10:
         logger.info("offChipTempValue important change...")
         return True
-    if (percent(currentDetection.get('onboardBrightnessValue'),lastDetection.get('onboardBrightnessValue')))>2:
+    if (percent(currentDetection.get('onboardBrightnessValue'),lastDetection.get('onboardBrightnessValue')))>15:
         logger.info("onboardBrightnessValue important change...")
         return True
-    if (percent(currentDetection.get('onboardTemperatureValue'),lastDetection.get('onboardTemperatureValue')))>2:
+    if (percent(currentDetection.get('onboardTemperatureValue'),lastDetection.get('onboardTemperatureValue')))>10:
         logger.info("onboardTemperatureValue important change...")
         return True
-    if (percent(currentDetection.get('onboardHumidityValue'),lastDetection.get('onboardHumidityValue')))>2:
+    if (percent(currentDetection.get('onboardHumidityValue'),lastDetection.get('onboardHumidityValue')))>10:
         logger.info("onboardHumidityValue important change...")
         return True
-    if (percent(currentDetection.get('barometerTemperaturValue'),lastDetection.get('barometerTemperaturValue')))>2:
+    if (percent(currentDetection.get('barometerTemperaturValue'),lastDetection.get('barometerTemperaturValue')))>10:
         logger.info("barometerTemperaturValue important change...")
         return True
     if (percent(currentDetection.get('barometerPressureValue'),lastDetection.get('barometerPressureValue')))>10:
@@ -173,7 +173,7 @@ while True:
         
         if aReceiveBuf[ON_BOARD_SENSOR_ERROR] != 0 :
             logger.debug("Onboard temperature and humidity sensor data may not be up to date!")
-            sensorStatus['onboardBrightnessMessage'] = 'Onboard temperature and humidity sensor data may not be up to date!'
+            sensorStatus['onboardTemperatureMessage'] = 'Onboard temperature and humidity sensor data may not be up to date!'
             sensorStatus['onboardHumidityMessage'] = 'Onboard temperature and humidity sensor data may not be up to date!'
             
         
@@ -208,13 +208,14 @@ while True:
         sensorStatus['rilevationTime'] = x.strftime("%d-%m-%Y %H:%M:%S.%f")
         
         sensorStatus['imei'] = imei
+        sensorStatus['props'] = []    #for enrichment...
         
         if len(lastSensorStatus) == 0:  #first run --> NOTIFY!
             lastSensorStatus = sensorStatus
             notifyStatus(sensorStatus)
             lastNotificationTime = datetime.datetime.now()
         else:
-            if (((datetime.datetime.now() - lastNotificationTime).seconds / 60) > 2 or checkImportantChange(sensorStatus, lastSensorStatus) == True):
+            if (((datetime.datetime.now() - lastNotificationTime).seconds / 60) > 5 or checkImportantChange(sensorStatus, lastSensorStatus) == True):
                 notifyStatus(sensorStatus)
                 lastSensorStatus = sensorStatus
                 lastNotificationTime = datetime.datetime.now()

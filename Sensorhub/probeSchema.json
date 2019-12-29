@@ -1,0 +1,265 @@
+  1 {
+  2   "definitions": {},
+  3   "$schema": "http://json-schema.org/draft-07/schema#",
+  4   "$id": "http://example.com/root.json",
+  5   "type": "object",
+  6   "title": "The Root Schema",
+  7   "required": [
+  8     "offChipTempValue",
+  9     "offChipTempStatus",
+ 10     "offChipTempMessage",
+ 11     "onboardBrightnessValue",
+ 12     "onboardBrightnessStatus",
+ 13     "onboardBrightnessMessage",
+ 14     "onboardTemperatureValue",
+ 15     "onboardTemperatureStatus",
+ 16     "onboardHumidityValue",
+ 17     "onboardHumidityStatus",
+ 18     "onboardTemperatureMessage",
+ 19     "onboardHumidityMessage",
+ 20     "barometerTemperaturValue",
+ 21     "barometerTemperaturStatus",
+ 22     "barometerPressureValue",
+ 23     "barometerPressureStatus",
+ 24     "barometerTemperatureMessage",
+ 25     "barometerPressureMessage",
+ 26     "presenceValue",
+ 27     "presenceStatus",
+ 28     "presenceMessage",
+ 29     "rilevationTime",
+ 30     "imei",
+ 31     "props"
+ 32   ],
+ 33   "properties": {
+ 34     "offChipTempValue": {
+ 35       "$id": "#/properties/offChipTempValue",
+ 36       "type": "integer",
+ 37       "title": "The Offchiptempvalue Schema",
+ 38       "default": 0,
+ 39       "examples": [
+ 40         22
+ 41       ]
+ 42     },
+ 43     "offChipTempStatus": {
+ 44       "$id": "#/properties/offChipTempStatus",
+ 45       "type": "string",
+ 46       "title": "The Offchiptempstatus Schema",
+ 47       "default": "",
+ 48       "examples": [
+ 49         "OK"
+ 50       ],
+ 51       "pattern": "^(.*)$"
+ 52     },
+ 53     "offChipTempMessage": {
+ 54       "$id": "#/properties/offChipTempMessage",
+ 55       "type": "string",
+ 56       "title": "The Offchiptempmessage Schema",
+ 57       "default": "",
+ 58       "examples": [
+ 59         "blabla"
+ 60       ],
+ 61       "pattern": "^(.*)$"
+ 62     },
+ 63     "onboardBrightnessValue": {
+ 64       "$id": "#/properties/onboardBrightnessValue",
+ 65       "type": "integer",
+ 66       "title": "The Onboardbrightnessvalue Schema",
+ 67       "default": 0,
+ 68       "examples": [
+ 69         0
+ 70       ]
+ 71     },
+ 72     "onboardBrightnessStatus": {
+ 73       "$id": "#/properties/onboardBrightnessStatus",
+ 74       "type": "string",
+ 75       "title": "The Onboardbrightnessstatus Schema",
+ 76       "default": "",
+ 77       "examples": [
+ 78         "OK"
+ 79       ],
+ 80       "pattern": "^(.*)$"
+ 81     },
+ 82     "onboardBrightnessMessage": {
+ 83       "$id": "#/properties/onboardBrightnessMessage",
+ 84       "type": "string",
+ 85       "title": "The Onboardbrightnessmessage Schema",
+ 86       "default": "",
+ 87       "examples": [
+ 88         "bla"
+ 89       ],
+ 90       "pattern": "^(.*)$"
+ 91     },
+ 92     "onboardTemperatureValue": {
+ 93       "$id": "#/properties/onboardTemperatureValue",
+ 94       "type": "integer",
+ 95       "title": "The Onboardtemperaturevalue Schema",
+ 96       "default": 0,
+ 97       "examples": [
+ 98         24
+ 99       ]
+100     },
+101     "onboardTemperatureStatus": {
+102       "$id": "#/properties/onboardTemperatureStatus",
+103       "type": "string",
+104       "title": "The Onboardtemperaturestatus Schema",
+105       "default": "",
+106       "examples": [
+107         "OK"
+108       ],
+109       "pattern": "^(.*)$"
+110     },
+111     "onboardHumidityValue": {
+112       "$id": "#/properties/onboardHumidityValue",
+113       "type": "integer",
+114       "title": "The Onboardhumidityvalue Schema",
+115       "default": 0,
+116       "examples": [
+117         43
+118       ]
+119     },
+120     "onboardHumidityStatus": {
+121       "$id": "#/properties/onboardHumidityStatus",
+122       "type": "string",
+123       "title": "The Onboardhumiditystatus Schema",
+124       "default": "",
+125       "examples": [
+126         "OK"
+127       ],
+128       "pattern": "^(.*)$"
+129     },
+130     "onboardTemperatureMessage": {
+131       "$id": "#/properties/onboardTemperatureMessage",
+132       "type": "string",
+133       "title": "The Onboardtemperaturemessage Schema",
+134       "default": "",
+135       "examples": [
+136         "bla"
+137       ],
+138       "pattern": "^(.*)$"
+139     },
+140     "onboardHumidityMessage": {
+141       "$id": "#/properties/onboardHumidityMessage",
+142       "type": "string",
+143       "title": "The Onboardhumiditymessage Schema",
+144       "default": "",
+145       "examples": [
+146         "bla"
+147       ],
+148       "pattern": "^(.*)$"
+149     },
+150     "barometerTemperaturValue": {
+151       "$id": "#/properties/barometerTemperaturValue",
+152       "type": "integer",
+153       "title": "The Barometertemperaturvalue Schema",
+154       "default": 0,
+155       "examples": [
+156         26
+157       ]
+158     },
+159     "barometerTemperaturStatus": {
+160       "$id": "#/properties/barometerTemperaturStatus",
+161       "type": "string",
+162       "title": "The Barometertemperaturstatus Schema",
+163       "default": "",
+164       "examples": [
+165         "OK"
+166       ],
+167       "pattern": "^(.*)$"
+168     },
+169     "barometerPressureValue": {
+170       "$id": "#/properties/barometerPressureValue",
+171       "type": "integer",
+172       "title": "The Barometerpressurevalue Schema",
+173       "default": 0,
+174       "examples": [
+175         99074
+176       ]
+177     },
+178     "barometerPressureStatus": {
+179       "$id": "#/properties/barometerPressureStatus",
+180       "type": "string",
+181       "title": "The Barometerpressurestatus Schema",
+182       "default": "",
+183       "examples": [
+184         "OK"
+185       ],
+186       "pattern": "^(.*)$"
+187     },
+188     "barometerTemperatureMessage": {
+189       "$id": "#/properties/barometerTemperatureMessage",
+190       "type": "string",
+191       "title": "The Barometertemperaturemessage Schema",
+192       "default": "",
+193       "examples": [
+194         "bla"
+195       ],
+196       "pattern": "^(.*)$"
+197     },
+198     "barometerPressureMessage": {
+199       "$id": "#/properties/barometerPressureMessage",
+200       "type": "string",
+201       "title": "The Barometerpressuremessage Schema",
+202       "default": "",
+203       "examples": [
+204         "bla"
+205       ],
+206       "pattern": "^(.*)$"
+207     },
+208     "presenceValue": {
+209       "$id": "#/properties/presenceValue",
+210       "type": "integer",
+211       "title": "The Presencevalue Schema",
+212       "default": 0,
+213       "examples": [
+214         0
+215       ]
+216     },
+217     "presenceStatus": {
+218       "$id": "#/properties/presenceStatus",
+219       "type": "string",
+220       "title": "The Presencestatus Schema",
+221       "default": "",
+222       "examples": [
+223         "OK"
+224       ],
+225       "pattern": "^(.*)$"
+226     },
+227     "presenceMessage": {
+228       "$id": "#/properties/presenceMessage",
+229       "type": "string",
+230       "title": "The Presencemessage Schema",
+231       "default": "",
+232       "examples": [
+233         "No humans detected!"
+234       ],
+235       "pattern": "^(.*)$"
+236     },
+237     "rilevationTime": {
+238       "$id": "#/properties/rilevationTime",
+239       "type": "string",
+240       "title": "The Rilevationtime Schema",
+241       "default": "",
+242       "examples": [
+243         "23-12-2019 09:16:27.787753"
+244       ],
+245       "pattern": "^(.*)$"
+246     },
+247     "imei": {
+248       "$id": "#/properties/imei",
+249       "type": "string",
+250       "title": "The Imei Schema",
+251       "default": "",
+252       "examples": [
+253         "000000001b982f0d"
+254       ],
+255       "pattern": "^(.*)$"
+256     },
+257     "props": {
+258       "$id": "#/properties/props",
+259       "type": "array",
+260       "title": "The Props Schema"
+261     }
+262   }
+263 }
+
+

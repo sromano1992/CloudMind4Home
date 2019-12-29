@@ -113,7 +113,7 @@ def on_disconnect(unused_client, unused_userdata, rc):
 
 def on_publish(unused_client, unused_userdata, unused_mid):
     """Paho callback when a message is sent to the broker."""
-    logger.debug('on_publish')
+    logger.debug('on_publish - mid: ' + str(unused_mid))
 
 
 def on_message(unused_client, unused_userdata, message):
@@ -181,6 +181,7 @@ def send_data_from_bound_device(
     logger.info("Sending to Google IoT Core...")
     # [START send_data_from_bound_device]
     global minimum_backoff_time
+    global should_backoff
 
     # Publish device events and gateway state.
     device_topic = '/devices/{}/{}'.format(device_id, 'events')
@@ -194,7 +195,7 @@ def send_data_from_bound_device(
     jwt_exp_mins = jwt_expires_minutes
     seconds_since_issue = (datetime.datetime.utcnow() - jwt_iat).seconds
     if seconds_since_issue > 60 * jwt_exp_mins:
-        logger.debug('Refreshing token after {}s').format(seconds_since_issue)
+        logger.debug('Refreshing token after {}s'.format(seconds_since_issue))
         jwt_iat = datetime.datetime.utcnow()
         client = get_client(
             project_id, cloud_region, registry_id, gateway_id,
@@ -208,12 +209,15 @@ def send_data_from_bound_device(
             mqtt_bridge_port)
 
     # Publish num_messages messages to the MQTT bridge
-    client.loop()
+    #client.loop()
 
     if should_backoff:
         # If backoff time is too large, give up.
         if minimum_backoff_time > MAXIMUM_BACKOFF_TIME:
             logger.error('Exceeded maximum backoff time. Giving up.')
+            client = None
+            minimum_backoff_time = 1
+            should_backoff = False
             return
 
         delay = minimum_backoff_time + random.randint(0, 1000) / 1000.0
@@ -221,9 +225,10 @@ def send_data_from_bound_device(
         minimum_backoff_time *= 2
         client.connect(mqtt_bridge_hostname, mqtt_bridge_port)
 
-    client.publish(
+    mqttinfo= client.publish(
             device_topic, '{} : {}'.format(device_id, payload), qos=1)
-
+    logger.debug("mid: " + str(mqttinfo.mid) + " - is_published: " + str(mqttinfo.is_published()))
+    client.loop()
 
     logger.info('sent...')
     # [END send_data_from_bound_device]
