@@ -5,5 +5,5 @@ ENV GOOGLE_APPLICATION_CREDENTIALS /cloudmind4home-466bc3b3211d.json
 COPY target/streaming-uber-jar.jar /streaming-uber-jar.jar
 COPY src/main/resources/config.properties /config.properties
 COPY src/main/resources/cloudmind4home-466bc3b3211d.json /cloudmind4home-466bc3b3211d.json
-# run application with this command line 
+# run application with this command line
 CMD ["/streaming-uber-jar.jar", "/config.properties"]

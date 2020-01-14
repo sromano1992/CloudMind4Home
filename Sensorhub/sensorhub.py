@@ -9,6 +9,7 @@ import datetime
 import logging
 import logging.config
 import gcloudmqtt
+import ibmcloudmqtt
 import os
 
 if BOARD_EMULATOR == False:
@@ -59,11 +60,15 @@ def checkImportantChange(currentDetection, lastDetection):
         logger.info("presenceValue important change...")
         return True
 
+
+def myOnPublishCallback():
+    logger.info("Confirmed event received by WIoTP")
+    
 #Sample commandline:
 #python3 gcloudiotMqtt.py --algorithm RS256 --device_id RASP_000000001b982f0d --private_key_file ../../security/rsa_private.pem --registry_id cloudmind4home --ca_certs ../../security/roots.pem --project_id cloudmind4home --cloud_region europe-west1 gateway_send
-def notifyStatus(jsonStatus):
+def notifyStatus(jsonStatus_dict):
     logger.info('notifying...')
-    jsonStatus = json.dumps(jsonStatus)
+    jsonStatus = json.dumps(jsonStatus_dict)
     logger.info(jsonStatus)
     
     logger.info("Google IoT Core notification...")
@@ -73,6 +78,9 @@ def notifyStatus(jsonStatus):
             "", 100, "../../security/rsa_private.pem",
             "RS256", "../../security/roots.pem", "mqtt.googleapis.com",
             8883, 20, jsonStatus)
+    
+    logger.info("IBM Watson IoT notification...")
+    ibmcloudmqtt.send("device.cfg", jsonStatus_dict, myOnPublishCallback)
 
 DEVICE_BUS = 1
 DEVICE_ADDR = 0x17

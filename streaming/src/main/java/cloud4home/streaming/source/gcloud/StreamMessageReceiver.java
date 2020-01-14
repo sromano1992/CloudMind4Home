@@ -28,7 +28,7 @@ public class StreamMessageReceiver implements MessageReceiver {
 			this.sink.put(record);
 			consumer.ack();
 		} catch (Exception e) {
-			logger.error("Excpetion: " + e.getMessage(), e);
+			logger.error("Exception: " + e.getMessage(), e);
 		}
 	}
 
