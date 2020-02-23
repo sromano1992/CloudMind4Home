@@ -18,7 +18,7 @@ docker push gcr.io/${PROJECT_ID}/cloudmind4home/streaming:v1
 docker run gcr.io/${PROJECT_ID}/cloudmind4home/streaming:v1
 ```
 
-## GKE deploy
+# GKE deploy
 
 ```
 //https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
