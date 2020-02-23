@@ -1,0 +1,2 @@
+BigQuery
+https://cloud.google.com/bigquery/docs/creating-partitioned-tables
