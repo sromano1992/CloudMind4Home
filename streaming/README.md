@@ -1,3 +1,5 @@
+# Local test
+
 ```
 docker build -t cloudmind4home/streaming:v1 .
 docker run cloudmind4home/streaming:v1
